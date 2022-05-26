@@ -1,4 +1,5 @@
 ﻿using LetsTalk.Membership;
+using LetsTalk.Membership.Services;
 using LetsTalk.Shared.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -46,7 +47,7 @@ public static class ServiceExtensions
     {
         services.ConfigureApplicationCookie(config =>
         {
-            config.LoginPath = "/Home/Signin";
+            config.LoginPath = "/Account/Signin";
             config.Cookie.SameSite = SameSiteMode.None;
             config.Events = new CookieAuthenticationEvents()
             {
@@ -57,5 +58,10 @@ public static class ServiceExtensions
                 }
             };
         });
+    }
+
+    public static void RegisterServices(this IServiceCollection services)
+    {
+        services.AddScoped<IAccountService, AccountService>();
     }
 }
