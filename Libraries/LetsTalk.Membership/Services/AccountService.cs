@@ -50,7 +50,11 @@ public class AccountService : IAccountService
         throw new Exception("Email or password is invalid");
     }
 
-    public async Task<ApplicationUser> GetUserInfo() =>
+    public async Task<ApplicationUser> GetUserInfoAsync() =>
         await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
-    
+
+    public async Task LogoutAsync()
+    {
+        await _signInManager.SignOutAsync();
+    }
 }

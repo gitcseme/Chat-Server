@@ -39,8 +39,16 @@ namespace LetsTalk.Api.Controllers
         [Route("user-info")]
         public async Task<IActionResult> GetUser()
         {
-            var user = await _accountService.GetUserInfo();
-            return Ok(user);
+            var loggedInUser = await _accountService.GetUserInfoAsync();
+            return Ok(loggedInUser);
+        }
+
+        [HttpPost]
+        [Route("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _accountService.LogoutAsync();
+            return Ok();
         }
     }
 }

@@ -7,5 +7,6 @@ public interface IAccountService
 {
     Task<ApplicationUser> RegisterAsync(RegisterModel model);
     Task<ApplicationUser> LoginAsync(LoginModel model);
-    Task<ApplicationUser> GetUserInfo();
+    Task<ApplicationUser> GetUserInfoAsync();
+    Task LogoutAsync();
 }
