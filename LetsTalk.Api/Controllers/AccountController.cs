@@ -31,16 +31,24 @@ namespace LetsTalk.Api.Controllers
         [Route("login")]
         public async Task<IActionResult> Login(LoginModel model)
         {
-            var user = await _accountService.LoginAsync(model);
-            return Ok(user);
+            var userResponse = await _accountService.LoginAsync(model);
+            return Ok(userResponse);
         }
         
         [HttpGet]
         [Route("user-info")]
         public async Task<IActionResult> GetUser()
         {
-            var loggedInUser = await _accountService.GetUserInfoAsync();
-            return Ok(loggedInUser);
+            var loggedInUserResponse = await _accountService.GetUserInfoAsync();
+            return Ok(loggedInUserResponse);
+        }
+
+        [HttpGet]
+        [Route("users")]
+        public async Task<IActionResult> GetUsers()
+        {
+            var users = await _accountService.GetUsersAsync();
+            return Ok(users);
         }
 
         [HttpPost]
