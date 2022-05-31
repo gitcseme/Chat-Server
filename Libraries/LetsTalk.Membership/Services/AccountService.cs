@@ -2,6 +2,7 @@
 using LetsTalk.Shared.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace LetsTalk.Membership.Services;
 
@@ -21,7 +22,7 @@ public class AccountService : IAccountService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<ApplicationUser> RegisterAsync(RegisterModel model)
+    public async Task<UserResponseDto> RegisterAsync(RegisterModel model)
     {
         var user = new ApplicationUser
         {
@@ -34,27 +35,40 @@ public class AccountService : IAccountService
         if (result.Succeeded)
         {
             await _signInManager.SignInAsync(user, isPersistent: false);
-            return user;
+            return PrepareUserResponse(user);
         }
 
         var error = result.Errors.FirstOrDefault()?.Description;
         throw new Exception(error);
     }
 
-    public async Task<ApplicationUser> LoginAsync(LoginModel model)
+    public async Task<UserResponseDto> LoginAsync(LoginModel model)
     {
         var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
         if (result.Succeeded)
-            return await _userManager.FindByEmailAsync(model.Email);
+            return PrepareUserResponse(await _userManager.FindByEmailAsync(model.Email));
         
         throw new Exception("Email or password is invalid");
     }
 
-    public async Task<ApplicationUser> GetUserInfoAsync() =>
-        await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+    public async Task<UserResponseDto> GetUserInfoAsync() =>
+        PrepareUserResponse(await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User));
 
-    public async Task LogoutAsync()
-    {
+    public async Task LogoutAsync() =>
         await _signInManager.SignOutAsync();
+
+    public async Task<IEnumerable<UserResponseDto>> GetUsersAsync()
+    {
+        var loggedInUser = await GetUserInfoAsync();
+        var usersResponse = await _userManager.Users
+            .Where(u => u.Id != loggedInUser.Id)
+            .Select(u => PrepareUserResponse(u))
+            .ToListAsync();
+
+        return usersResponse;
     }
+
+    private static UserResponseDto PrepareUserResponse(ApplicationUser user) =>
+        new UserResponseDto(user.Id, user.NickName, user.Email);
+    
 }
