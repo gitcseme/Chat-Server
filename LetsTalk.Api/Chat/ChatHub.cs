@@ -15,6 +15,9 @@ public class ChatHub : Hub<IChatClient>
     {
         var openMessage = new OpenMessage(privateMessage.Message, privateMessage.Sender, MessagePrivacy.Private);
 
-        await Clients.User(privateMessage.ReceiverId).ReceiveMessage(openMessage);
+        // await Clients.User(privateMessage.ReceiverId).ReceiveMessage(openMessage);
+        await Clients
+            .Users(new List<string>() { privateMessage.Sender.Id.ToString(), privateMessage.ReceiverId })
+            .ReceiveMessage(openMessage);
     }
 }
