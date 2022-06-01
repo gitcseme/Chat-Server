@@ -1,4 +1,5 @@
-﻿using LetsTalk.Shared.DTO;
+﻿using LetsTalk.Shared.Constants;
+using LetsTalk.Shared.DTO;
 using Microsoft.AspNetCore.SignalR;
 
 namespace LetsTalk.Api.Chat;
@@ -12,7 +13,7 @@ public class ChatHub : Hub<IChatClient>
 
     public async Task SendPrivateMessage(PrivateMessage privateMessage)
     {
-        var openMessage = new OpenMessage(privateMessage.Message, privateMessage.Sender);
+        var openMessage = new OpenMessage(privateMessage.Message, privateMessage.Sender, MessagePrivacy.Private);
 
         await Clients.User(privateMessage.ReceiverId).ReceiveMessage(openMessage);
     }
